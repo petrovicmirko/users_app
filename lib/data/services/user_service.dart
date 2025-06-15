@@ -68,6 +68,44 @@ class UserService {
     return newUser;
   }
 
+  Future<UserApiModel> updateUser(UserApiModel userApiModel) async {
+    try {
+      final db = await database;
+      final rowsAffected = await db.update(
+        'users',
+        userApiModel.toMap(),
+        where: 'id = ?',
+        whereArgs: [userApiModel.id],
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      print(
+        'Updated user with id: ${userApiModel.id}, rows affected: $rowsAffected',
+      );
+      if (rowsAffected == 0) {
+        throw Exception('No user found with id: ${userApiModel.id}');
+      }
+      return userApiModel;
+    } catch (e) {
+      print('Error updating user: $e');
+      throw Exception('Failed to update user: $e');
+    }
+  }
+
+  Future<void> deleteUser(String id) async {
+    try {
+      final db = await database;
+      final rowsAffected = await db.delete(
+        'users',
+        where: 'id = ?',
+        whereArgs: [id],
+      );
+      print('Deleted user with id $id, rows affected: $rowsAffected');
+    } catch (e) {
+      print('Error deleting user: $e');
+      throw Exception('Failed to delete user: $e');
+    }
+  }
+
   // Future<List<UserApiModel>> fetchUsers() async {
   //   try {
   //     final response = await http.get(Uri.parse(_baseUrl));

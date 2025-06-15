@@ -14,7 +14,10 @@ class UserRepository {
   Future<List<User>> fetchUsers() async {
     final apiUsers = await _userService.fetchUsers();
     return apiUsers
-        .map((apiUser) => User(apiUser.id, apiUser.name, apiUser.username))
+        .map(
+          (apiUser) =>
+              User(apiUser.id, apiUser.name, apiUser.username, apiUser.email),
+        )
         .toList();
   }
 
@@ -27,6 +30,37 @@ class UserRepository {
     );
 
     final addedApiUser = await _userService.addUser(apiUser);
-    return User(addedApiUser.id, addedApiUser.name, addedApiUser.username);
+    return User(
+      addedApiUser.id,
+      addedApiUser.name,
+      addedApiUser.username,
+      addedApiUser.email,
+    );
+  }
+
+  Future<User> updateUser(
+    String id,
+    String name,
+    String username,
+    String email,
+  ) async {
+    final apiUser = UserApiModel(
+      id: id,
+      name: name,
+      username: username,
+      email: email,
+    );
+
+    final updatedApiUser = await _userService.updateUser(apiUser);
+    return User(
+      updatedApiUser.id,
+      updatedApiUser.name,
+      updatedApiUser.username,
+      updatedApiUser.email,
+    );
+  }
+
+  Future<void> deleteUser(String id) async {
+    await _userService.deleteUser(id);
   }
 }

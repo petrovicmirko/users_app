@@ -9,14 +9,23 @@ class AddUserDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final nameController = TextEditingController();
-    final usernameController = TextEditingController();
-    final emailController = TextEditingController();
-
     final userViewModel = Provider.of<UserViewModel>(context, listen: false);
 
+    final isEditing = userViewModel.isEditing;
+    final selectedUser = userViewModel.selectedUser;
+
+    final nameController = TextEditingController(
+      text: isEditing ? selectedUser?.name : '',
+    );
+    final usernameController = TextEditingController(
+      text: isEditing ? selectedUser?.username : '',
+    );
+    final emailController = TextEditingController(
+      text: isEditing ? selectedUser?.email : '',
+    );
+
     return AlertDialog(
-      title: const Text('Add new user'),
+      title: Text(isEditing ? 'Update user' : 'Add new user'),
       content: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -38,22 +47,39 @@ class AddUserDialog extends StatelessWidget {
       ),
       actions: [
         TextButton(
-          onPressed: () => {Navigator.pop(context)},
+          onPressed:
+              () => {
+                userViewModel.setSelectedUser(null),
+                Navigator.pop(context),
+              },
           child: const Text('Cancel'),
         ),
         CustomButton(
-          text: 'Add',
+          text: 'Save',
           onPressed: () {
             final name = nameController.text.trim();
             final username = usernameController.text.trim();
             final email = emailController.text.trim();
             if (name.isNotEmpty && username.isNotEmpty && email.isNotEmpty) {
-              userViewModel.addUser(name, username, email).then((_) {
+              final future =
+                  isEditing
+                      ? userViewModel.updateUser(
+                        selectedUser!.id,
+                        name,
+                        username,
+                        email,
+                      )
+                      : userViewModel.addUser(name, username, email);
+              future.then((_) {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('User added succesfully'),
-                    duration: Duration(seconds: 1),
+                  SnackBar(
+                    content: Text(
+                      isEditing
+                          ? 'User updated successfully'
+                          : 'User added successfully',
+                    ),
+                    duration: const Duration(seconds: 1),
                   ),
                 );
               });

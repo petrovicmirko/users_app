@@ -7,6 +7,11 @@ class UserViewModel extends ChangeNotifier {
   late UserRepository _userRepository;
   List<User> users = [];
 
+  User? _selectedUser;
+
+  User? get selectedUser => _selectedUser;
+  bool get isEditing => _selectedUser != null;
+
   UserViewModel() {
     _userRepository = UserRepository();
     fetchUsers();
@@ -27,5 +32,44 @@ class UserViewModel extends ChangeNotifier {
     } finally {
       notifyListeners();
     }
+  }
+
+  Future<void> updateUser(
+    String id,
+    String name,
+    String username,
+    String email,
+  ) async {
+    try {
+      final updatedUser = await _userRepository.updateUser(
+        id,
+        name,
+        username,
+        email,
+      );
+
+      users = users.map((user) => user.id == id ? updatedUser : user).toList();
+      _selectedUser = null;
+    } catch (e) {
+      print('Failed to update user: $e');
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  Future<void> deleteUser(String id) async {
+    try {
+      await _userRepository.deleteUser(id);
+      users = users.where((user) => user.id != id).toList();
+    } catch (e) {
+      print('Failed to delete user: $e');
+    } finally {
+      notifyListeners();
+    }
+  }
+
+  void setSelectedUser(User? user) {
+    _selectedUser = user;
+    notifyListeners();
   }
 }
