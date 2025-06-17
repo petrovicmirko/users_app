@@ -35,7 +35,7 @@ class UserViewModel extends ChangeNotifier {
   }
 
   Future<void> updateUser(
-    String id,
+    int id,
     String name,
     String username,
     String email,
@@ -57,7 +57,7 @@ class UserViewModel extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteUser(String id) async {
+  Future<void> deleteUser(int id) async {
     try {
       await _userRepository.deleteUser(id);
       users = users.where((user) => user.id != id).toList();

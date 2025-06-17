@@ -32,7 +32,7 @@ class UserScreen extends StatelessWidget {
             itemBuilder: (context, index) {
               final user = userViewModel.users[index];
               return Dismissible(
-                key: Key(user.id),
+                key: Key(user.id.toString()),
                 background: Container(
                   color: Colors.blue,
                   alignment: Alignment.centerLeft,
@@ -53,7 +53,7 @@ class UserScreen extends StatelessWidget {
                       context: context,
                       builder: (context) => const AddUserDialog(),
                     );
-                    return false; // Prevent dismissal after editing
+                    return false;
                   } else {
                     return await showDialog(
                       context: context,
@@ -85,7 +85,9 @@ class UserScreen extends StatelessWidget {
                         .then((_) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('Korisnik ${user.name} obrisan'),
+                              content: Text(
+                                'User ${user.name} deleted successfully',
+                              ),
                               duration: const Duration(seconds: 1),
                             ),
                           );
@@ -93,9 +95,7 @@ class UserScreen extends StatelessWidget {
                         .catchError((e) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text(
-                                'Greška pri brisanju korisnika: $e',
-                              ),
+                              content: Text('Failed to delete user: $e'),
                               duration: const Duration(seconds: 2),
                             ),
                           );
@@ -108,25 +108,6 @@ class UserScreen extends StatelessWidget {
                   subtitle: Text(user.username),
                 ),
               );
-              // return ListTile(
-              //   title: Text(user.name),
-              //   subtitle: Text(user.username),
-              //   trailing: IconButton(
-              //     icon: Icon(Icons.delete, color: Colors.red),
-              //     onPressed: () {
-              //       userViewModel.deleteUser(user.id).then((_) {
-              //         ScaffoldMessenger.of(context).showSnackBar(
-              //           SnackBar(
-              //             content: Text(
-              //               'User ${user.name} deleted successfully',
-              //             ),
-              //             duration: Duration(seconds: 1),
-              //           ),
-              //         );
-              //       });
-              //     },
-              //   ),
-              // );
             },
           );
         },

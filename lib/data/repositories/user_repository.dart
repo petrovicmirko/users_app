@@ -12,26 +12,21 @@ class UserRepository {
   }
 
   Future<List<User>> fetchUsers() async {
-    final apiUsers = await _userService.fetchUsers();
+    final apiUsers = await _userService.fetchUsers1();
     return apiUsers
         .map(
           (apiUser) =>
-              User(apiUser.id, apiUser.name, apiUser.username, apiUser.email),
+              User(apiUser.id!, apiUser.name, apiUser.username, apiUser.email),
         )
         .toList();
   }
 
   Future<User> addUser(String name, String username, String email) async {
-    final apiUser = UserApiModel(
-      id: const Uuid().v4(),
-      name: name,
-      username: username,
-      email: email,
-    );
+    final apiUser = UserApiModel(name: name, username: username, email: email);
 
-    final addedApiUser = await _userService.addUser(apiUser);
+    final addedApiUser = await _userService.addUser1(apiUser);
     return User(
-      addedApiUser.id,
+      addedApiUser.id!,
       addedApiUser.name,
       addedApiUser.username,
       addedApiUser.email,
@@ -39,7 +34,7 @@ class UserRepository {
   }
 
   Future<User> updateUser(
-    String id,
+    int id,
     String name,
     String username,
     String email,
@@ -51,16 +46,16 @@ class UserRepository {
       email: email,
     );
 
-    final updatedApiUser = await _userService.updateUser(apiUser);
+    final updatedApiUser = await _userService.updateUser1(apiUser);
     return User(
-      updatedApiUser.id,
+      updatedApiUser.id!,
       updatedApiUser.name,
       updatedApiUser.username,
       updatedApiUser.email,
     );
   }
 
-  Future<void> deleteUser(String id) async {
-    await _userService.deleteUser(id);
+  Future<void> deleteUser(int id) async {
+    await _userService.deleteUser1(id);
   }
 }
