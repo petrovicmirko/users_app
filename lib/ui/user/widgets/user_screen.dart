@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import 'package:users_app/ui/core/ui/custom_button.dart';
+import 'package:users_app/ui/core/themes/theme_provider.dart';
+import 'package:users_app/ui/core/ui/custom_floating_action_button.dart';
+
 import 'package:users_app/ui/user/view_model/user_view_model.dart';
 import 'package:users_app/ui/user/widgets/add_user_dialog.dart';
 
@@ -14,14 +16,13 @@ class UserScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Users'),
         actions: [
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) => const AddUserDialog(),
+          Consumer<ThemeProvider>(
+            builder: (context, themeProvider, _) {
+              return Switch(
+                value: themeProvider.isDarkMode,
+                onChanged: (value) => themeProvider.toggleTheme(value),
               );
             },
-            icon: Icon(Icons.add),
           ),
         ],
       ),
@@ -33,17 +34,23 @@ class UserScreen extends StatelessWidget {
               final user = userViewModel.users[index];
               return Dismissible(
                 key: Key(user.id.toString()),
-                background: Container(
-                  color: Colors.blue,
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.only(left: 16.0),
-                  child: const Icon(Icons.edit, color: Colors.white),
+                background: Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Container(
+                    color: Colors.blue,
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.only(left: 16.0),
+                    child: const Icon(Icons.edit, color: Colors.white),
+                  ),
                 ),
-                secondaryBackground: Container(
-                  color: Colors.red,
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: const Icon(Icons.delete, color: Colors.white),
+                secondaryBackground: Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 16.0),
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
                 ),
                 direction: DismissDirection.horizontal,
                 confirmDismiss: (direction) async {
@@ -103,18 +110,26 @@ class UserScreen extends StatelessWidget {
                         });
                   }
                 },
-                child: ListTile(
-                  title: Text(user.name),
-                  subtitle: Text(user.username),
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: ListTile(
+                    title: Text(user.name),
+                    subtitle: Text(user.username),
+                  ),
                 ),
               );
             },
           );
         },
       ),
-      floatingActionButton: CustomButton(
-        text: 'Refresh users',
-        onPressed: context.read<UserViewModel>().fetchUsers,
+      floatingActionButton: CustomFloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (context) => const AddUserDialog(),
+          );
+        },
+        icon: Icons.add,
       ),
     );
   }
